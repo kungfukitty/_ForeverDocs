@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { ArrowRight, Shield, Crown, Users, Upload, Share2 } from './icons'
-import { cfg } from './config'
-import WaitlistForm from './components/WaitlistForm'
-import ShareButtons from './components/ShareButtons'
-import Press from './pages/Press'
-import Impact from './pages/Impact'
-import Sponsor from './pages/Sponsor'
-import Ambassador from './pages/Ambassador'
-import Privacy from './pages/Privacy'
-import Terms from './pages/Terms'
-import DemoCrest from './pages/DemoCrest'
+
+// Explicit extensions to avoid resolver issues
+import { ArrowRight, Shield, Crown, Users, Upload, Share2 } from './icons.jsx'
+import { cfg } from './config.js'
+import WaitlistForm from './components/WaitlistForm.jsx'
+import ShareButtons from './components/ShareButtons.jsx'
+
+import Press from './pages/Press.jsx'
+import Impact from './pages/Impact.jsx'
+import Sponsor from './pages/Sponsor.jsx'
+import Ambassador from './pages/Ambassador.jsx'
+import Privacy from './pages/Privacy.jsx'
+import Terms from './pages/Terms.jsx'
+import DemoCrest from './pages/DemoCrest.jsx'
 
 function Header() {
   return (
@@ -45,7 +48,11 @@ function MockupImage({ className = '' }) {
         className={`rounded-2xl border border-white/10 shadow-glow ${ok ? '' : 'hidden'} ${className}`}
       />
       {!ok && (
-        <div className={`rounded-2xl border border-white/10 shadow-glow p-10 text-center text-muted ${className}`} role="img" aria-label="App mockup placeholder">
+        <div
+          className={`rounded-2xl border border-white/10 shadow-glow p-10 text-center text-muted ${className}`}
+          role="img"
+          aria-label="App mockup placeholder"
+        >
           Preview coming soon
         </div>
       )}
@@ -236,7 +243,7 @@ function Footer() {
     <footer className="section py-10 text-sm text-muted">
       <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" className="w-6 h-6" />
+          <img src="/logo.svg" className="w-6 h-6" alt="ForeverDocs logo" />
           <span>© {new Date().getFullYear()} ForeverDocs Foundation</span>
         </div>
         <div className="flex gap-4">
@@ -249,22 +256,22 @@ function Footer() {
   )
 }
 
-export default function App(){
+export default function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen">
-        <Header/>
+        <Header />
         <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/press" element={<Press/>} />
-          <Route path="/impact" element={<Impact/>} />
-          <Route path="/sponsor" element={<Sponsor/>} />
-          <Route path="/ambassador" element={<Ambassador/>} />
-          <Route path="/privacy" element={<Privacy/>} />
-          <Route path="/terms" element={<Terms/>} />
-          <Route path="/demo" element={<DemoCrest/>} />
+          <Route path="/" element={<Home />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/impact" element={<Impact />} />
+          <Route path="/sponsor" element={<Sponsor />} />
+          <Route path="/ambassador" element={<Ambassador />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/demo" element={<DemoCrest />} />
         </Routes>
-        <Footer/>
+        <Footer />
       </div>
     </BrowserRouter>
   )
