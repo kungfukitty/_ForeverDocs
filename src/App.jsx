@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 
-// Explicit extensions to avoid resolver issues
-import { ArrowRight, Shield, Crown, Users, Upload, Share2 } from './icons.jsx'
+// keep these paths/casing exactly as they are in your repo
+import { ArrowRight, Shield, Crown, Users, Upload } from './icons.jsx'
 import { cfg } from './config.js'
-import WaitlistForm from './components/WaitlistForm.jsx'
-import ShareButtons from './components/ShareButtons.jsx'
 
 import Press from './pages/Press.jsx'
 import Impact from './pages/Impact.jsx'
@@ -14,6 +12,87 @@ import Ambassador from './pages/Ambassador.jsx'
 import Privacy from './pages/Privacy.jsx'
 import Terms from './pages/Terms.jsx'
 import DemoCrest from './pages/DemoCrest.jsx'
+
+/** ---------- Inline components (so no external imports required) ---------- */
+
+function ShareButtonsInline({ className = '', text }) {
+  const url =
+    cfg.shareUrl ||
+    (typeof window !== 'undefined' ? window.location.origin : 'https://foreverdocs.org')
+
+  const message =
+    text ||
+    `I just secured our family documents with ${cfg.siteName}. Join me: ${url} #ProtectOurLegacy`
+
+  const wa = `https://wa.me/?text=${encodeURIComponent(message)}`
+  const sms = `sms:?&body=${encodeURIComponent(message)}`
+  const tw = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`
+  const canWebShare = typeof navigator !== 'undefined' && navigator.share
+  const doShare = async () => { try { await navigator.share({ title: cfg.siteName, text: message, url }) } catch {} }
+
+  return (
+    <div className={`flex gap-2 ${className}`}>
+      {canWebShare && <button onClick={doShare} className="btn btn-secondary text-sm">Share</button>}
+      <a className="btn btn-secondary text-sm" href={wa} target="_blank" rel="noreferrer">WhatsApp</a>
+      <a className="btn btn-secondary text-sm" href={sms}>Text</a>
+      <a className="btn btn-secondary text-sm" href={tw} target="_blank" rel="noreferrer">Twitter</a>
+    </div>
+  )
+}
+
+function WaitlistInline() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState('idle')
+
+  const submit = async (e) => {
+    e.preventDefault()
+    setStatus('loading')
+    try {
+      const utm = JSON.parse(localStorage.getItem('utm') || 'null') || {}
+      const body = { email, utm }
+      const res = await fetch(`${(import.meta.env.VITE_API_URL || '/api').replace(/\/+$/,'')}/waitlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      setEmail('')
+      setStatus('ok')
+    } catch (err) {
+      console.error(err)
+      setStatus('err')
+    }
+  }
+
+  return (
+    <div className="card p-4 mt-4">
+      <form onSubmit={submit}>
+        <div className="flex gap-2">
+          <input
+            className="input flex-1"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
+            type="email"
+            required
+          />
+          <button className="btn btn-primary" disabled={status==='loading'}>
+            {status==='loading' ? 'Submitting…' : 'Join Waitlist'}
+          </button>
+        </div>
+      </form>
+      {status==='ok' && (
+        <div className="mt-3">
+          <p className="text-sm text-green-400">You’re in! Nominate 3 relatives:</p>
+          <ShareButtonsInline className="mt-2" />
+        </div>
+      )}
+      {status==='err' && <p className="text-sm mt-2 text-red-400">Couldn’t submit. Try again.</p>}
+    </div>
+  )
+}
+
+/** ----------------------------------------------------------------------- */
 
 function Header() {
   return (
@@ -85,8 +164,8 @@ function Home() {
                 Powered by community partners{cfg.sponsor ? ` • Sponsored by ${cfg.sponsor}` : ''}.
               </div>
               <div id="cta" className="max-w-xl">
-                <WaitlistForm />
-                <ShareButtons className="mt-3" />
+                <WaitlistInline />
+                <ShareButtonsInline className="mt-3" />
               </div>
             </div>
 
@@ -114,7 +193,7 @@ function Home() {
                 <div className="mt-6 grid sm:grid-cols-3 gap-3">
                   <button className="btn btn-secondary text-sm"><Upload className="w-4 h-4 mr-2" />Upload</button>
                   <button className="btn btn-secondary text-sm"><Users className="w-4 h-4 mr-2" />Designate Heirs</button>
-                  <button className="btn btn-secondary text-sm"><Share2 className="w-4 h-4 mr-2" />Share Access</button>
+                  <button className="btn btn-secondary text-sm">Share Access</button>
                 </div>
               </div>
               <div className="absolute -right-6 -bottom-6 w-40 h-40 bg-gold/10 rounded-full blur-2xl pointer-events-none" />
