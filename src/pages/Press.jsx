@@ -1,0 +1,13 @@
+import React from 'react'
+
+export default function Press() {
+  return (
+    <section className="section py-16">
+      <h1 className="text-3xl font-extrabold">Press</h1>
+      <p className="text-muted mt-2 max-w-2xl">
+        For media inquiries, interviews, or speaking requests, contact
+        <span className="text-ink"> press@foreverdocs.org</span>.
+      </p>
+    </section>
+  )
+}
